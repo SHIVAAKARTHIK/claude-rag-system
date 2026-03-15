@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Claude Models</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f1117;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    .card {
+      background: #1a1d27;
+      border-radius: 20px;
+      padding: 48px 52px;
+      width: 960px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      border: 1px solid #2a2d3a;
+    }
+
+    .header {
+      margin-bottom: 36px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #7c3aed22;
+      color: #a78bfa;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #7c3aed44;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      color: #f1f5f9;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    h1 span { color: #a78bfa; }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+    }
+
+    thead th {
+      text-align: left;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 18px 8px;
+    }
+
+    tbody tr {
+      background: #22263a;
+      border-radius: 14px;
+    }
+
+    tbody tr td {
+      padding: 22px 18px;
+      vertical-align: middle;
+    }
+
+    tbody tr td:first-child { border-radius: 14px 0 0 14px; }
+    tbody tr td:last-child  { border-radius: 0 14px 14px 0; }
+
+    /* Model name cell */
+    .model-cell { display: flex; align-items: center; gap: 14px; }
+
+    .model-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .icon-haiku  { background: #0369a133; }
+    .icon-sonnet { background: #7c3aed33; }
+    .icon-opus   { background: #b4530033; }
+
+    .model-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .model-version {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .strengths {
+      color: #e2e8f0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Speed dots */
+    .speed { display: flex; align-items: center; gap: 6px; }
+    .speed-label { color: #94a3b8; font-size: 14px; }
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .dot-active  { background: #22c55e; }
+    .dot-mid     { background: #f59e0b; }
+    .dot-inactive{ background: #334155; }
+
+    /* Cost */
+    .cost {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .coin { font-size: 16px; }
+    .cost-label { color: #94a3b8; font-size: 13px; margin-left: 4px; }
+
+    /* Highlight row */
+    .highlight-row { background: #1e2d40; }
+    .highlight-row td:first-child { position: relative; }
+    .highlight-row td:first-child::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: #a78bfa;
+      border-radius: 14px 0 0 14px;
+    }
+
+    .used-badge {
+      display: inline-block;
+      background: #7c3aed33;
+      color: #c4b5fd;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid #7c3aed66;
+      margin-top: 6px;
+    }
+
+    .alias {
+      display: inline-block;
+      background: #1e293b;
+      color: #64748b;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+    }
+
+    .footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #2a2d3a;
+      color: #475569;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer strong { color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="tag">Claude Models</div>
+      <h1>Choosing the Right <span>Claude Model</span></h1>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Alias</th>
+          <th>Strengths</th>
+          <th>Speed</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td>
+            <div class="model-cell">
+              <div class="model-icon icon-haiku">⚡</div>
+              <div>
+                <div class="model-name">Haiku</div>
+                <div class="model-version">Haiku 4.5</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="alias">haiku</span></td>
+          <td class="strengths">Fast, simple tasks,<br>lightweight operations</td>
+          <td>
+            <div class="speed">
+              <span class="dot dot-active"></span>
+              <span class="dot dot-active"></span>
+              <span class="dot dot-active"></span>
+              <span class="speed-label">Fastest</span>
+            </div>
+          </td>
+          <td>
+            <div class="cost">
+              <span class="coin">💰</span>
+              <span class="cost-label">Cheapest</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr class="highlight-row">
+          <td>
+            <div class="model-cell">
+              <div class="model-icon icon-sonnet">✨</div>
+              <div>
+                <div class="model-name">Sonnet</div>
+                <div class="model-version">Sonnet 4.6</div>
+                <div class="used-badge">I used this</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="alias">sonnet</span></td>
+          <td class="strengths">Daily coding,<br>balanced capability</td>
+          <td>
+            <div class="speed">
+              <span class="dot dot-active"></span>
+              <span class="dot dot-active"></span>
+              <span class="dot dot-inactive"></span>
+              <span class="speed-label">Fast</span>
+            </div>
+          </td>
+          <td>
+            <div class="cost">
+              <span class="coin">💰</span>
+              <span class="coin">💰</span>
+              <span class="cost-label">Mid-range</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="model-cell">
+              <div class="model-icon icon-opus">🧠</div>
+              <div>
+                <div class="model-name">Opus</div>
+                <div class="model-version">Opus 4.6</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="alias">opus</span></td>
+          <td class="strengths">Complex reasoning,<br>architecture, hard bugs</td>
+          <td>
+            <div class="speed">
+              <span class="dot dot-mid"></span>
+              <span class="dot dot-inactive"></span>
+              <span class="dot dot-inactive"></span>
+              <span class="speed-label">Slower</span>
+            </div>
+          </td>
+          <td>
+            <div class="cost">
+              <span class="coin">💰</span>
+              <span class="coin">💰</span>
+              <span class="coin">💰</span>
+              <span class="cost-label">Premium</span>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <span>Built with <strong>Claude Code</strong> · Multimodal RAG System</span>
+      <span>Slide 6 of 7</span>
+    </div>
+  </div>
+</body>
+</html>

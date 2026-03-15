@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Slide 2 - Bar Graph</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f1117;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    .card {
+      background: #1a1d27;
+      border-radius: 20px;
+      padding: 48px 52px;
+      width: 900px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      border: 1px solid #2a2d3a;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #7c3aed22;
+      color: #a78bfa;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #7c3aed44;
+    }
+
+    .slide-num { color: #334155; font-size: 13px; font-weight: 500; }
+
+    h1 {
+      color: #f1f5f9;
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    h1 span { color: #a78bfa; }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 15px;
+      margin-bottom: 44px;
+    }
+
+    /* Chart area */
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 32px;
+      height: 280px;
+      padding: 0 20px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    /* Horizontal grid lines */
+    .chart::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent,
+          transparent calc(25% - 1px),
+          #2a2d3a calc(25% - 1px),
+          #2a2d3a 25%
+        );
+      pointer-events: none;
+      border-radius: 4px;
+    }
+
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      height: 100%;
+      justify-content: flex-end;
+      position: relative;
+      z-index: 1;
+    }
+
+    .bar-value {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 10px 10px 0 0;
+      position: relative;
+      transition: opacity 0.2s;
+    }
+
+    /* Manual — red, 7 days = 100% of 280px = 280px */
+    .bar-manual {
+      height: 280px;
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      box-shadow: 0 0 24px #ef444433;
+    }
+
+    .bar-value-manual { color: #f87171; }
+
+    /* n8n — yellow, 3 days = 42.8% of 280px ≈ 120px */
+    .bar-n8n {
+      height: 120px;
+      background: linear-gradient(180deg, #facc15 0%, #ca8a04 100%);
+      box-shadow: 0 0 24px #facc1533;
+    }
+
+    .bar-value-n8n { color: #fde047; }
+
+    /* Claude — green, 0.2 days = 2.8% of 280px ≈ 8px — make it visible at min 12px */
+    .bar-claude {
+      height: 12px;
+      background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+      box-shadow: 0 0 20px #4ade8066;
+    }
+
+    .bar-value-claude { color: #4ade80; }
+
+    /* X-axis */
+    .x-axis {
+      display: flex;
+      gap: 32px;
+      padding: 0 20px;
+      margin-bottom: 32px;
+    }
+
+    .x-label {
+      flex: 1;
+      text-align: center;
+    }
+
+    .x-label-name {
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .x-label-sub {
+      color: #475569;
+      font-size: 12px;
+    }
+
+    /* Legend + stat row */
+    .bottom-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: #22263a;
+      border-radius: 14px;
+      padding: 18px 20px;
+      border: 1px solid #2a2d3a;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .stat-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-red    { background: #ef4444; box-shadow: 0 0 8px #ef444466; }
+    .dot-yellow { background: #facc15; box-shadow: 0 0 8px #facc1566; }
+    .dot-green  { background: #4ade80; box-shadow: 0 0 8px #4ade8066; }
+
+    .stat-info {}
+
+    .stat-val {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .stat-val.red    { color: #f87171; }
+    .stat-val.yellow { color: #fde047; }
+    .stat-val.green  { color: #4ade80; }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .highlight-stat {
+      border-color: #4ade8033;
+      background: #15803d11;
+    }
+
+    .savings-banner {
+      background: #22263a;
+      border: 1px solid #4ade8033;
+      border-radius: 14px;
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .savings-icon { font-size: 22px; }
+
+    .savings-text {
+      color: #4ade80;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .savings-text span {
+      color: #64748b;
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    .footer {
+      padding-top: 20px;
+      border-top: 1px solid #2a2d3a;
+      color: #475569;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .footer strong { color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top">
+      <div class="tag">Time Comparison</div>
+      <div class="slide-num">2 / 7</div>
+    </div>
+
+    <h1>The time difference is <span>shocking</span></h1>
+    <div class="subtitle">Time to build a production Multimodal RAG System</div>
+
+    <!-- Bar Chart -->
+    <div class="chart">
+      <div class="bar-group">
+        <div class="bar-value bar-value-manual">7 days</div>
+        <div class="bar bar-manual"></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value bar-value-n8n">3 days</div>
+        <div class="bar bar-n8n"></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value bar-value-claude">4 hours</div>
+        <div class="bar bar-claude"></div>
+      </div>
+    </div>
+
+    <!-- X Axis Labels -->
+    <div class="x-axis">
+      <div class="x-label">
+        <div class="x-label-name">Manual Coding</div>
+        <div class="x-label-sub">Write everything from scratch</div>
+      </div>
+      <div class="x-label">
+        <div class="x-label-name">n8n / Low-code</div>
+        <div class="x-label-sub">Drag-drop workflows</div>
+      </div>
+      <div class="x-label">
+        <div class="x-label-name">Claude Code</div>
+        <div class="x-label-sub">AI-assisted development</div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="bottom-row">
+      <div class="stat-card">
+        <div class="stat-dot dot-red"></div>
+        <div class="stat-info">
+          <div class="stat-val red">7 days</div>
+          <div class="stat-label">Manual Coding</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-dot dot-yellow"></div>
+        <div class="stat-info">
+          <div class="stat-val yellow">3 days</div>
+          <div class="stat-label">n8n / Low-code</div>
+        </div>
+      </div>
+      <div class="stat-card highlight-stat">
+        <div class="stat-dot dot-green"></div>
+        <div class="stat-info">
+          <div class="stat-val green">4 hours</div>
+          <div class="stat-label">Claude Code ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Savings banner -->
+    <div class="savings-banner">
+      <div class="savings-icon">🚀</div>
+      <div class="savings-text">
+        97% time saved — <span>from 7 days to 4 hours with Claude Code</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Built with <strong>Claude Code</strong> · Multimodal RAG System</span>
+      <span>Slide 2 of 7</span>
+    </div>
+  </div>
+</body>
+</html>

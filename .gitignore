@@ -1,0 +1,27 @@
+# Environment files
+.env
+.env.local
+
+# Temp files
+.tmp/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Node
+node_modules/
+.next/
+
+# Data (large files)
+data/uploads/
+backend/data/uploads/
+
+# IDE / local settings
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
