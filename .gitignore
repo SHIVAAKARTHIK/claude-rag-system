@@ -22,6 +22,9 @@ backend/data/uploads/
 # IDE / local settings
 .claude/settings.local.json
 
+# Carousel slides
+carousel/
+
 # OS
 .DS_Store
 Thumbs.db
